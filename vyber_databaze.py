@@ -57,8 +57,6 @@ class Ui_MainWindow_Vyber_db(object):
             pocitadlo2 += 1
 
 
-
-
     def setupUi(self, MainWindow):
 
 
@@ -106,7 +104,6 @@ class Ui_MainWindow_Vyber_db(object):
         font.setPointSize(10)
         self.pushButton.setFont(font)
         self.pushButton.setObjectName("pushButton")
-
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)

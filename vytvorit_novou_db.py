@@ -1,14 +1,66 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox
+from os.path import exists
+import sqlite3
+import hashlib
 
 
 class Ui_MainWindow_Vytvorit_novou_databazi(object):
 
     def center(self):
+
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+
+
+    def vytvorit_db(self):
+
+        # vytvoří databázi a textový soubor s hashem hesla
+
+        nazev =  str(self.lineEdit.text())
+        heslo = str(self.lineEdit_2.text())
+
+        existuje = exists(nazev + ".db")
+
+        if nazev == "":
+
+            return "NEMA_NAZEV"
+
+        elif existuje == True:
+
+            return "DB_EXISTUJE"
+
+
+        else:
+
+            sqliteConnection = sqlite3.connect(nazev + ".db")
+            cursor = sqliteConnection.cursor()
+
+            VytvoritTabulku = "CREATE TABLE 'tabulka' ('ID' INT PRIMARY KEY NOT NULL, Nazev TEXT, Zapsani DATE, Zapsani_cas TEXT, Odepsani DATE, Odepsani_cas Text)"
+
+            cursor.execute(VytvoritTabulku)
+
+            sqliteConnection.commit()
+            cursor.close()
+
+            if heslo == "":
+
+                with open(nazev + "_password", "w") as output:
+
+                    output.write(str("BEZHESLA"))
+
+
+            else:
+
+                hash_hesla = hashlib.sha256(heslo.encode())
+                hex_dig = hash_hesla.hexdigest()
+
+                with open(nazev + "_password", "w") as output:
+
+                    output.write(str(hex_dig))
 
 
     def setupUi(self, MainWindow):
