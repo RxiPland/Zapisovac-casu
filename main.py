@@ -9,6 +9,7 @@ from vytvorit_novou_db import Ui_MainWindow_Vytvorit_novou_databazi
 from hlavni_menu import Ui_MainWindow_hlavnimenu
 from os import execl
 from os.path import exists
+import sqlite3
 
 
 class vybrani_databaze(QMainWindow, Ui_MainWindow_Vyber_db):
@@ -97,6 +98,31 @@ class vybrani_databaze(QMainWindow, Ui_MainWindow_Vyber_db):
 
             elif existuje == True:
 
+                connection = sqlite3.connect(obsah_boxu + '.db')
+                cursor = connection.cursor()
+
+                sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
+                vysledek1 = cursor.execute(sqlstr).fetchall()
+
+                id_1 = int(vysledek1[0][0])
+
+                sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={id_1}".format(id_1=id_1)
+                vysledek1 = cursor.execute(sqlstr).fetchall()
+
+                posledni_datum_odepsani = str(vysledek1)
+
+                connection.commit()
+                cursor.close()
+
+                if posledni_datum_odepsani == "[(None,)]":
+
+                    hl_menu.label_2.setHidden(False)
+
+                else:
+
+                    hl_menu.label_2.setHidden(True)
+
+
                 vyber_db1.close()
                 vyber_db1.center()
 
@@ -176,6 +202,90 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
         QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
 
+    def kontrola_chyb_zacatek(self):
+
+        chyby_zacatek = self.zapsat_zacatek()
+
+        if chyby_zacatek == "DB_NEEXISTUJE":
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém!")
+            msgBox.setText("Databáze neexistuje!\n\nVytvořte novou.")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            python = sys.executable
+            execl(python, python, * sys.argv)
+
+        elif chyby_zacatek == "POSLEDNI_KONEC_NEBYL_ODEPSAN":
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém!")
+            msgBox.setText("Poslední konec nebyl zapsán!\n\nProblém vyřešíte tím, že zapíšete konec")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+
+        elif chyby_zacatek == "OK":
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Čas začátku byl zapsán")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+
+
+
+
+    def kontrola_chyb_konec(self):
+
+        chyby_konec = self.zapsat_konec()
+
+        if chyby_konec == "DB_NEEXISTUJE":
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém!")
+            msgBox.setText("Databáze neexistuje!\n\nVytvořte novou.")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            python = sys.executable
+            execl(python, python, * sys.argv)
+
+        elif chyby_konec == "POSLEDNI_KONEC_BYL_ZAPSAN":
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém!")
+            msgBox.setText("Konec je už zapsaný od předchozího zápisu!")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+        
+
+        elif chyby_konec == "DB_NEFUNGUJE":
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Problém!")
+            msgBox.setText("Databáze nefunguje")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+        elif chyby_konec == "OK":
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Čas ukončení byl zapsán")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+
 
 
 if __name__ == "__main__":
@@ -189,5 +299,7 @@ if __name__ == "__main__":
     vyber_db1.comboBox.activated.connect(vyber_db1.potvrdit_nacteni_databaze)
     vytvorit_novou.pushButton.clicked.connect(vytvorit_novou.vytvorit_databazi)
     vytvorit_novou.pushButton_2.clicked.connect(vyber_db1.tlacitko_zpet)
+    hl_menu.pushButton.clicked.connect(hl_menu.kontrola_chyb_zacatek)
+    hl_menu.pushButton_2.clicked.connect(hl_menu.kontrola_chyb_konec)
     app.aboutToQuit.connect(hl_menu.ukoncit)
     sys.exit(app.exec_())
