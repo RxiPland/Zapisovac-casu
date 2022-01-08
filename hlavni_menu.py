@@ -95,17 +95,29 @@ class Ui_MainWindow_hlavnimenu(object):
             sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
             vysledek1 = cursor.execute(sqlstr).fetchall()
 
-            id_1 = int(vysledek1[0][0])
+            try:
+
+                id_1 = int(vysledek1[0][0])
+
+            except:
+
+                id_1 = int(1)
 
             sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={id_1}".format(id_1=id_1)
             vysledek1 = cursor.execute(sqlstr).fetchall()
 
-            posledni_datum_odepsani = str(vysledek1)
+            try:
+
+                posledni_datum_odepsani = str(vysledek1)
+
+            except:
+
+                posledni_datum_odepsani = "MUZE_DAL"
 
             connection.commit()
             cursor.close()
 
-            if posledni_datum_odepsani != "[(None,)]":
+            if posledni_datum_odepsani != "[(None,)]" or posledni_datum_odepsani == "MUZE_DAL":
 
                 id_1 += 1
 
@@ -136,7 +148,7 @@ class Ui_MainWindow_hlavnimenu(object):
 
             else:
 
-                return "POSLEDNI_KONEC_NEBYL_ODEPSAN"
+                return "POSLEDNI_KONEC_NEBYL_ZAPSAN"
 
 
 
@@ -163,12 +175,25 @@ class Ui_MainWindow_hlavnimenu(object):
                 sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
                 vysledek1 = cursor.execute(sqlstr).fetchall()
 
-                id_1 = int(vysledek1[0][0])
+                try:
+
+                    id_1 = int(vysledek1[0][0])
+
+                except:
+
+                    id_1 = int(1)
 
                 sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={id_1}".format(id_1=id_1)
                 vysledek1 = cursor.execute(sqlstr).fetchall()
 
-                posledni_datum_odepsani = str(vysledek1)
+                try:
+
+                    posledni_datum_odepsani = str(vysledek1)
+
+                except:
+
+                    posledni_datum_odepsani = "MUZE_DAL"
+                
 
 
                 connection.commit()
@@ -178,7 +203,7 @@ class Ui_MainWindow_hlavnimenu(object):
 
                 return "DB_NEFUNGUJE"
 
-            if posledni_datum_odepsani == "[(None,)]":
+            if posledni_datum_odepsani == "[(None,)]" or posledni_datum_odepsani == "MUZE_DAL":
 
 
                 now2 = datetime.now()
@@ -215,7 +240,7 @@ class Ui_MainWindow_hlavnimenu(object):
 
             else:
 
-                return "POSLEDNI_KONEC_BYL_ZAPSAN"
+                return "POSLEDNI_KONEC_BYL_UZ_ZAPSAN"
 
 
 

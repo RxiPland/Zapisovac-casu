@@ -117,10 +117,10 @@ class Ui_MainWindow_Vyber_db(object):
 
 
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Výběr databáze"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Výběr projektu"))
         self.label.setText(_translate("MainWindow", "Vybrat existující:"))
-        self.label_2.setText(_translate("MainWindow", "Vyberte databázi, do které chcete zapisovat časy:"))
-        self.pushButton.setText(_translate("MainWindow", "Vytvořit novou"))
+        self.label_2.setText(_translate("MainWindow", "Vyberte projekt, ke kterému chcete zapisovat časy:"))
+        self.pushButton.setText(_translate("MainWindow", "Vytvořit nový"))
         self.label_3.setText(_translate("MainWindow", "nebo"))
         self.dosadit_nazev_do_boxu()
 

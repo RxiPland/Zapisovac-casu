@@ -98,27 +98,33 @@ class vybrani_databaze(QMainWindow, Ui_MainWindow_Vyber_db):
 
             elif existuje == True:
 
-                connection = sqlite3.connect(obsah_boxu + '.db')
-                cursor = connection.cursor()
+                try:
 
-                sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
-                vysledek1 = cursor.execute(sqlstr).fetchall()
+                    connection = sqlite3.connect(obsah_boxu + '.db')
+                    cursor = connection.cursor()
 
-                id_1 = int(vysledek1[0][0])
+                    sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
+                    vysledek1 = cursor.execute(sqlstr).fetchall()
 
-                sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={id_1}".format(id_1=id_1)
-                vysledek1 = cursor.execute(sqlstr).fetchall()
+                    id_1 = int(vysledek1[0][0])
 
-                posledni_datum_odepsani = str(vysledek1)
+                    sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={id_1}".format(id_1=id_1)
+                    vysledek1 = cursor.execute(sqlstr).fetchall()
 
-                connection.commit()
-                cursor.close()
+                    posledni_datum_odepsani = str(vysledek1)
 
-                if posledni_datum_odepsani == "[(None,)]":
+                    connection.commit()
+                    cursor.close()
 
-                    hl_menu.label_2.setHidden(False)
+                    if posledni_datum_odepsani == "[(None,)]":
 
-                else:
+                        hl_menu.label_2.setHidden(False)
+
+                    else:
+
+                        hl_menu.label_2.setHidden(True)
+
+                except:
 
                     hl_menu.label_2.setHidden(True)
 
@@ -218,7 +224,7 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
             python = sys.executable
             execl(python, python, * sys.argv)
 
-        elif chyby_zacatek == "POSLEDNI_KONEC_NEBYL_ODEPSAN":
+        elif chyby_zacatek == "POSLEDNI_KONEC_NEBYL_ZAPSAN":
 
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Warning)
@@ -257,7 +263,7 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
             python = sys.executable
             execl(python, python, * sys.argv)
 
-        elif chyby_konec == "POSLEDNI_KONEC_BYL_ZAPSAN":
+        elif chyby_konec == "POSLEDNI_KONEC_BYL_UZ_ZAPSAN":
 
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Warning)
