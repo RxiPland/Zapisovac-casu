@@ -1,7 +1,32 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox
+import sqlite3
+from os.path import exists
+from datetime import date
 
 class Ui_MainWindow_admin_panel(object):
+
+
+    def center(self):
+
+        # funkce, která přesune okno programu do prostřed obrazovky
+
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    
+    def nazev_projektu(self, a):
+
+        # načte jméno vybraného projektu do proměnné pro budoucí použítí
+
+        global nazev
+
+        nazev = str(a)
+
+        self.label_2.setText("Aktuálně vybraný projekt: " + nazev)
+
 
 
 
@@ -79,7 +104,7 @@ class Ui_MainWindow_admin_panel(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Admin panel"))
         self.pushButton.setText(_translate("MainWindow", "Změnit heslo"))
-        self.plainTextEdit.setPlainText(_translate("MainWindow", "Celkový odpracovaný čas: \n\n\nPoslední zapsání: \nPoslední odepsání:\n\n\nDatum prvního zapsání:\n\n\nCelkový počet zapsání:\nCelkový počet odepsání:"))
+        self.plainTextEdit.setPlainText(_translate("MainWindow", "Celkový odpracovaný čas: \n\n\nPoslední začátek: \nPoslední konec: \n\n\nDatum prvního začátku: \n\n\nCelkový počet začátků: \nCelkový počet konců: "))
         self.label.setText(_translate("MainWindow", "Statistiky:"))
         self.pushButton_2.setText(_translate("MainWindow", "Vymazat databázi i s daty"))
         self.pushButton_3.setText(_translate("MainWindow", "Odejít"))

@@ -7,6 +7,8 @@ import sqlite3
 from os.path import exists
 from datetime import date
 
+
+
 class Ui_MainWindow_hlavnimenu(object):
 
     def center(self):
@@ -101,7 +103,7 @@ class Ui_MainWindow_hlavnimenu(object):
 
             except:
 
-                id_1 = int(1)
+                id_1 = int(0)
 
             sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={id_1}".format(id_1=id_1)
             vysledek1 = cursor.execute(sqlstr).fetchall()

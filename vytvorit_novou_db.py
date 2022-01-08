@@ -48,9 +48,7 @@ class Ui_MainWindow_Vytvorit_novou_databazi(object):
 
             if heslo == "":
 
-                with open(nazev + "_password", "w") as output:
-
-                    output.write(str("BEZHESLA"))
+                pass
 
 
             else:
@@ -58,7 +56,7 @@ class Ui_MainWindow_Vytvorit_novou_databazi(object):
                 hash_hesla = hashlib.sha256(heslo.encode())
                 hex_dig = hash_hesla.hexdigest()
 
-                with open(nazev + "_password", "w") as output:
+                with open(nazev + ".password", "w") as output:
 
                     output.write(str(hex_dig))
 

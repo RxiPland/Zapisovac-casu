@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QAbstractItemView, QMessageBox, QMainWindow, QApplic
 from PyQt5.QtWidgets import QMessageBox
 from vyber_databaze import Ui_MainWindow_Vyber_db
 from vytvorit_novou_db import Ui_MainWindow_Vytvorit_novou_databazi
+from admin import Ui_MainWindow_admin_panel
 from hlavni_menu import Ui_MainWindow_hlavnimenu
 from os import execl
 from os.path import exists
@@ -208,6 +209,7 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
         QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
 
+
     def kontrola_chyb_zacatek(self):
 
         chyby_zacatek = self.zapsat_zacatek()
@@ -242,8 +244,6 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
             msgBox.setText("Čas začátku byl zapsán")
             msgBox.setStandardButtons(QMessageBox.Ok)
             msgBox.exec()
-
-
 
 
 
@@ -293,6 +293,32 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
 
 
 
+class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
+
+
+    def __init__(self, *args, **kwargs):
+
+        QMainWindow.__init__(self, *args, **kwargs)
+        self.setupUi(self)
+    
+    def admin_panel_start(self):
+
+        nazev = str(vyber_db1.comboBox.currentText())
+
+        self.nazev_projektu(nazev)
+        
+        hl_menu.close()
+        hl_menu.center()
+        admin1.center()
+        admin1.show()
+
+    def tlacitko_odejit(self):
+
+        admin1.close()
+        admin1.center()
+        hl_menu.center()
+        hl_menu.show()
+
 
 if __name__ == "__main__":
     import sys
@@ -300,6 +326,7 @@ if __name__ == "__main__":
     vyber_db1 = vybrani_databaze()
     vytvorit_novou = vytvorit_databazi()
     hl_menu = hlavni_menu()
+    admin1 = admin_panel()
     vyber_db1.pro_zacatek()
     vyber_db1.pushButton.clicked.connect(vytvorit_novou.otevrit_okno)
     vyber_db1.comboBox.activated.connect(vyber_db1.potvrdit_nacteni_databaze)
@@ -307,5 +334,7 @@ if __name__ == "__main__":
     vytvorit_novou.pushButton_2.clicked.connect(vyber_db1.tlacitko_zpet)
     hl_menu.pushButton.clicked.connect(hl_menu.kontrola_chyb_zacatek)
     hl_menu.pushButton_2.clicked.connect(hl_menu.kontrola_chyb_konec)
+    hl_menu.pushButton_3.clicked.connect(admin1.admin_panel_start)
+    admin1.pushButton_3.clicked.connect(admin1.tlacitko_odejit)
     app.aboutToQuit.connect(hl_menu.ukoncit)
     sys.exit(app.exec_())
