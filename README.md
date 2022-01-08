@@ -1,1 +1,1 @@
-# prichod-odchod
+# Zapisovač času
