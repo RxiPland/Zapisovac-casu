@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox
 import sqlite3
 from os.path import exists
 import datetime
+import webbrowser
 
 class Ui_MainWindow_admin_panel(object):
 
@@ -79,13 +80,15 @@ class Ui_MainWindow_admin_panel(object):
 
                     pismena_string = pismena_string + "h "
 
+                    pocitadlo2 = 2
+
                 elif pocitadlo2 == 2:
 
                     pismena_string = pismena_string + "min "
 
         pismena_string = pismena_string + "s"
 
-        # 8003 dní 19h 30min 31s
+        # 8003dní 19h 30min 31s
 
         return str(pismena_string)
 
@@ -280,20 +283,9 @@ class Ui_MainWindow_admin_panel(object):
 
         return str(finalni_cas)
     
+
+
     def info_v_text_editu(self):
-
-        #celkovy_odpracovany_cas - funguje na 90% - bylo by lepší dodělat lepší zobrazení datumu (aktuální formát vypadá jak hodiny x Days, Hh:Mm:Ss - já chci v češtině a místo : mezery)
-
-        # posledni_zacatek - MÁM
-
-        # posledni_konec - MÁM
-
-        # datum_prvniho_zacatku - MÁM
-
-        # celkovy_pocet_zacatku - MÁM
-
-        # celkovy_pocet_koncu - MÁM
-
 
         try:
 
@@ -363,7 +355,33 @@ class Ui_MainWindow_admin_panel(object):
 
             celkovy_pocet_zacatku = int(posledni_id)
 
-            celkovy_pocet_koncu = int(posledni_id)
+
+            sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            try:
+
+                posledni_datum_odepsani1 = str(vysledek1)
+
+                if posledni_datum_odepsani1 == "None":
+
+                    posledni_datum_odepsani1 = "ZADNE_NENI"
+
+
+            except:
+
+                posledni_datum_odepsani1 = "ZADNE_NENI"
+
+
+            if posledni_datum_odepsani1 == "ZADNE_NENI":
+
+                celkovy_pocet_koncu = int(celkovy_pocet_zacatku) - 1
+
+            else:
+
+                celkovy_pocet_koncu = int(celkovy_pocet_zacatku)
 
 
             posledni_zacatek = self.predelat_datum(posledni_zacatek, "")
@@ -382,8 +400,14 @@ class Ui_MainWindow_admin_panel(object):
 
         except:
 
-            self.plainTextEdit.setPlainText("Pro vypočítání informací musíte provést alespoň první zapsání začátku a konce!")
-        
+            self.plainTextEdit.setPlainText("Nastala chyba při výpočtu statistik!")
+    
+
+
+
+    def zdrojovy_kod(self):
+
+        webbrowser.open("https://github.com/RxiPland/zapisovac-casu")
 
 
     def setupUi(self, MainWindow):
@@ -421,7 +445,7 @@ class Ui_MainWindow_admin_panel(object):
 
 
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(20, 330, 191, 41))
+        self.pushButton_2.setGeometry(QtCore.QRect(20, 330, 181, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.pushButton_2.setFont(font)
@@ -429,7 +453,7 @@ class Ui_MainWindow_admin_panel(object):
 
 
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(380, 328, 101, 41))
+        self.pushButton_3.setGeometry(QtCore.QRect(380, 330, 101, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.pushButton_3.setFont(font)
@@ -442,6 +466,15 @@ class Ui_MainWindow_admin_panel(object):
         font.setPointSize(10)
         self.pushButton_4.setFont(font)
         self.pushButton_4.setObjectName("pushButton_4")
+
+        self.pushButton_5 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_5.setGeometry(QtCore.QRect(210, 330, 101, 41))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.pushButton_5.setFont(font)
+        self.pushButton_5.setObjectName("pushButton_5")
+
+        self.pushButton_5.clicked.connect(self.zdrojovy_kod)
 
 
         self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
@@ -471,4 +504,5 @@ class Ui_MainWindow_admin_panel(object):
         self.pushButton_3.setText(_translate("MainWindow", "Odejít"))
         self.label_2.setText(_translate("MainWindow", "Aktuálně vybraný projekt:"))
         self.pushButton_4.setText(_translate("MainWindow", "Změnit název projektu"))
+        self.pushButton_5.setText(_translate("MainWindow", "Zdrojový kód"))
 

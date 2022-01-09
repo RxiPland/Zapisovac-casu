@@ -178,7 +178,7 @@ class vytvorit_databazi(QMainWindow, Ui_MainWindow_Vytvorit_novou_databazi):
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Warning)
             msgBox.setWindowTitle("Problém!")
-            msgBox.setText("Tenhle název už existuje!")
+            msgBox.setText("Projekt s tímto názvem už existuje!")
             msgBox.setStandardButtons(QMessageBox.Ok)
             msgBox.exec()
 
