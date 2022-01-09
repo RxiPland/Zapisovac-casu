@@ -30,9 +30,136 @@ class Ui_MainWindow_admin_panel(object):
     
     def info_v_text_editu(self):
 
-        pass
+        #celkovy_odpracovany_cas -
+
+        # posledni_zacatek - MÁM
+
+        # posledni_konec - MÁM
+
+        # datum_prvniho_zacatku - MÁM
+
+        # celkovy_pocet_zacatku - MÁM
+
+        # celkovy_pocet_koncu - MÁM
 
 
+        try:
+
+            connection = sqlite3.connect(nazev + '.db')
+            cursor = connection.cursor()
+
+            sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            posledni_id = int(vysledek1[0][0])
+
+
+            sqlstr = "SELECT * FROM tabulka ORDER BY ID LIMIT 1"
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            prvni_id = int(vysledek1[0][0])
+
+
+            sqlstr = "SELECT Zapsani FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            posledni_zacatek = str(vysledek1) # datum
+
+            sqlstr = "SELECT Zapsani_cas FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            posledni_zacatek_cas = str(vysledek1) # čas
+
+
+            sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            posledni_konec = str(vysledek1) # datum
+
+            sqlstr = "SELECT Odepsani_cas FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            posledni_konec_cas = str(vysledek1) # čas
+
+            if posledni_konec == "None":
+
+                sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id-1)
+                vysledek1 = cursor.execute(sqlstr).fetchall()
+
+                vysledek1 = vysledek1[0][0]
+
+                posledni_konec = str(vysledek1) # datum
+
+                sqlstr = "SELECT Odepsani_cas FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id-1)
+                vysledek1 = cursor.execute(sqlstr).fetchall()
+
+                vysledek1 = vysledek1[0][0]
+
+                posledni_konec_cas = str(vysledek1) # čas
+
+
+            sqlstr = "SELECT Zapsani FROM tabulka WHERE ID={prvni_id}".format(prvni_id=prvni_id)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            prvni_zacatek = str(vysledek1) # datum
+
+            sqlstr = "SELECT Zapsani_cas FROM tabulka WHERE ID={prvni_id}".format(prvni_id=prvni_id)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            prvni_zacatek_cas = str(vysledek1) # čas
+
+
+            celkovy_pocet_zacatku = int(posledni_id)
+
+
+            sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            try:
+
+                posledni_datum_odepsani1 = str(vysledek1)
+
+                if posledni_datum_odepsani1 == "None":
+
+                    posledni_datum_odepsani1 = "ZADNE_NENI"
+
+
+            except:
+
+                posledni_datum_odepsani1 = "ZADNE_NENI"
+
+
+            if posledni_datum_odepsani1 == "ZADNE_NENI":
+
+                celkovy_pocet_koncu = int(celkovy_pocet_zacatku) - 1
+
+            else:
+
+                celkovy_pocet_koncu = int(celkovy_pocet_zacatku)
+
+            
+            self.plainTextEdit.setPlainText("Celkový odpracovaný čas: {celkovy_cas}\n\n\nPoslední začátek: {posledni_zacatek}\nPoslední konec: {posledni_konec}\n\n\nDatum prvního začátku: {prvni_zacatek}\n\n\nCelkový počet začátků: {celkovy_pocet_zacatku}\nCelkový počet konců: {celkovy_pocet_koncu}".format(celkovy_cas = "NIC", posledni_zacatek = posledni_zacatek + " " + posledni_zacatek_cas, posledni_konec = posledni_konec + " " + posledni_konec_cas, prvni_zacatek = prvni_zacatek +  " " + prvni_zacatek_cas, celkovy_pocet_zacatku = celkovy_pocet_zacatku, celkovy_pocet_koncu = celkovy_pocet_koncu))
+
+
+
+        except:
+
+            self.plainTextEdit.setPlainText("Pro vypočítání informací musíte provést alespoň první zapsání začátku a konce!")
+        
 
 
     def setupUi(self, MainWindow):

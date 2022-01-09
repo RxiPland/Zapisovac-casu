@@ -359,6 +359,7 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
         heslo.close()
         heslo.center()
         admin1.center()
+        admin1.info_v_text_editu()
         admin1.show()
 
     def tlacitko_odejit(self):
