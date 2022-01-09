@@ -11,6 +11,11 @@ class Ui_MainWindow_Zmena_hesla_pro_admina(object):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(398, 174)
+
+        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, True)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMinimizeButtonHint, True)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -63,13 +68,3 @@ class Ui_MainWindow_Zmena_hesla_pro_admina(object):
         self.label.setText(_translate("MainWindow", "Zadejte nové heslo:"))
         self.pushButton.setText(_translate("MainWindow", "Potvrdit"))
         self.pushButton_2.setText(_translate("MainWindow", "Zrušit"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow_Zmena_hesla_pro_admina()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())

@@ -250,6 +250,11 @@ class Ui_MainWindow_hlavnimenu(object):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(497, 222)
+
+        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, True)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMinimizeButtonHint, True)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -310,13 +315,3 @@ class Ui_MainWindow_hlavnimenu(object):
         self.pushButton_3.setText(_translate("MainWindow", "Admin"))
         self.label.setText(_translate("MainWindow", ""))
         self.label_2.setText(_translate("MainWindow", "Stav: konec není zapsán"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow_hlavnimenu()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())

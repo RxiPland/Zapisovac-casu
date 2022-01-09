@@ -8,9 +8,11 @@ from vyber_databaze import Ui_MainWindow_Vyber_db
 from vytvorit_novou_db import Ui_MainWindow_Vytvorit_novou_databazi
 from admin import Ui_MainWindow_admin_panel
 from hlavni_menu import Ui_MainWindow_hlavnimenu
+from overit_heslo import Ui_MainWindow_overit_heslo
 from os import execl
 from os.path import exists
 import sqlite3
+import hashlib
 
 
 class vybrani_databaze(QMainWindow, Ui_MainWindow_Vyber_db):
@@ -140,7 +142,7 @@ class vybrani_databaze(QMainWindow, Ui_MainWindow_Vyber_db):
                 hl_menu.show()
                 
 
-        if returnValue == QMessageBox.No:
+        elif returnValue == QMessageBox.No:
 
             return
 
@@ -228,12 +230,59 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
 
         elif chyby_zacatek == "POSLEDNI_KONEC_NEBYL_ZAPSAN":
 
+
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Warning)
-            msgBox.setWindowTitle("Problém!")
-            msgBox.setText("Poslední konec nebyl zapsán!\n\nProblém vyřešíte tím, že zapíšete konec")
-            msgBox.setStandardButtons(QMessageBox.Ok)
-            msgBox.exec()
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Poslední konec nebyl zapsán!\n\nProblém můžete vyřešit tím, že:\n\n1) zapíšete konec\n2) smažete poslední zapsaný začátek")
+            msgBox.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
+            buttonY = msgBox.button(QMessageBox.Yes)
+            buttonY.setText("Chci ho smazat")
+            buttonN = msgBox.button(QMessageBox.No)
+            buttonN.setText("Zapíšu ho")
+
+            returnValue = msgBox.exec()
+
+
+            if returnValue == QMessageBox.Yes:
+
+                nazev = str(vyber_db1.comboBox.currentText())
+
+                connection = sqlite3.connect(nazev + '.db')
+                cursor = connection.cursor()
+
+                sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
+                vysledek1 = cursor.execute(sqlstr).fetchall()
+
+                try:
+
+                    id_1 = int(vysledek1[0][0])
+
+                except:
+
+                    msgBox = QMessageBox()
+                    msgBox.setIcon(QMessageBox.Warning)
+                    msgBox.setWindowTitle("Problém!")
+                    msgBox.setText("Nastala chyba se zjišťováním posledního ID v databázi")
+                    msgBox.setStandardButtons(QMessageBox.Ok)
+                    msgBox.exec()
+
+
+                sqlite_delete_query = ("DELETE FROM tabulka WHERE ID={id_1}".format(id_1=id_1))
+
+                cursor.execute(sqlite_delete_query)
+
+                connection.commit()
+                cursor.close()
+
+                hl_menu.label_2.setHidden(True)
+
+
+            elif returnValue == QMessageBox.No:
+                
+                hl_menu.label_2.setHidden(False)
+
+                return
 
 
         elif chyby_zacatek == "OK":
@@ -307,8 +356,8 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
 
         self.nazev_projektu(nazev)
         
-        hl_menu.close()
-        hl_menu.center()
+        heslo.close()
+        heslo.center()
         admin1.center()
         admin1.show()
 
@@ -320,6 +369,79 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
         hl_menu.show()
 
 
+class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
+
+
+    def __init__(self, *args, **kwargs):
+
+        QMainWindow.__init__(self, *args, **kwargs)
+        self.setupUi(self)
+
+    def odejit(self):
+
+        heslo.close()
+        heslo.center()
+        heslo.lineEdit.clear()
+
+        hl_menu.center()
+        hl_menu.show()
+
+
+    def zobrazit_okno(self):
+
+        hl_menu.close()
+        hl_menu.center()
+
+        nazev = str(vyber_db1.comboBox.currentText())
+
+        existuje = exists(nazev + ".heslo")
+
+        if existuje == True:
+
+            self.lineEdit.clear()
+            heslo.center()
+            heslo.show()
+
+        elif existuje == False:
+
+            admin1.admin_panel_start()
+
+
+    def overeni_hesla(self):
+
+        heslo = str(self.lineEdit.text())
+        nazev = str(vyber_db1.comboBox.currentText())
+
+
+        existuje = exists(nazev + ".heslo")
+
+        if existuje == True:
+
+            heslo_hash = open(nazev + ".heslo","r")
+            heslo_hash = heslo_hash.readline()
+
+            hash_zadaneho_hesla = hashlib.sha256(heslo.encode())
+            hex_dig = str(hash_zadaneho_hesla.hexdigest())
+
+            if hex_dig == heslo_hash:
+
+                admin1.admin_panel_start()
+
+            else:
+
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Warning)
+                msgBox.setWindowTitle("Chyba!")
+                msgBox.setText("Heslo není správné!")
+                msgBox.setStandardButtons(QMessageBox.Ok)
+                msgBox.exec()
+
+
+        elif existuje == False:
+
+            admin1.admin_panel_start()
+
+
 if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
@@ -327,6 +449,7 @@ if __name__ == "__main__":
     vytvorit_novou = vytvorit_databazi()
     hl_menu = hlavni_menu()
     admin1 = admin_panel()
+    heslo = overeni_hesla()
     vyber_db1.pro_zacatek()
     vyber_db1.pushButton.clicked.connect(vytvorit_novou.otevrit_okno)
     vyber_db1.comboBox.activated.connect(vyber_db1.potvrdit_nacteni_databaze)
@@ -334,7 +457,9 @@ if __name__ == "__main__":
     vytvorit_novou.pushButton_2.clicked.connect(vyber_db1.tlacitko_zpet)
     hl_menu.pushButton.clicked.connect(hl_menu.kontrola_chyb_zacatek)
     hl_menu.pushButton_2.clicked.connect(hl_menu.kontrola_chyb_konec)
-    hl_menu.pushButton_3.clicked.connect(admin1.admin_panel_start)
+    hl_menu.pushButton_3.clicked.connect(heslo.zobrazit_okno)
     admin1.pushButton_3.clicked.connect(admin1.tlacitko_odejit)
+    heslo.pushButton.clicked.connect(heslo.overeni_hesla)
+    heslo.pushButton_2.clicked.connect(heslo.odejit)
     app.aboutToQuit.connect(hl_menu.ukoncit)
     sys.exit(app.exec_())

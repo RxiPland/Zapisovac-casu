@@ -27,6 +27,11 @@ class Ui_MainWindow_admin_panel(object):
 
         self.label_2.setText("Aktuálně vybraný projekt: " + nazev)
 
+    
+    def info_v_text_editu(self):
+
+        pass
+
 
 
 
@@ -34,6 +39,11 @@ class Ui_MainWindow_admin_panel(object):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(509, 395)
+
+        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, True)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMinimizeButtonHint, True)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -111,12 +121,3 @@ class Ui_MainWindow_admin_panel(object):
         self.label_2.setText(_translate("MainWindow", "Aktuálně vybraný projekt:"))
         self.pushButton_4.setText(_translate("MainWindow", "Změnit název projektu"))
 
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow_admin_panel()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())

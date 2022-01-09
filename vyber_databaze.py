@@ -62,6 +62,11 @@ class Ui_MainWindow_Vyber_db(object):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(640, 190)
+
+        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, True)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMinimizeButtonHint, True)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -123,12 +128,3 @@ class Ui_MainWindow_Vyber_db(object):
         self.pushButton.setText(_translate("MainWindow", "Vytvořit nový"))
         self.label_3.setText(_translate("MainWindow", "nebo"))
         self.dosadit_nazev_do_boxu()
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow_Vyber_db()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())

@@ -56,7 +56,7 @@ class Ui_MainWindow_Vytvorit_novou_databazi(object):
                 hash_hesla = hashlib.sha256(heslo.encode())
                 hex_dig = hash_hesla.hexdigest()
 
-                with open(nazev + ".password", "w") as output:
+                with open(nazev + ".heslo", "w") as output:
 
                     output.write(str(hex_dig))
 
@@ -64,6 +64,11 @@ class Ui_MainWindow_Vytvorit_novou_databazi(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(470, 195)
+
+        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, True)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMinimizeButtonHint, True)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -137,13 +142,3 @@ class Ui_MainWindow_Vytvorit_novou_databazi(object):
         self.label_2.setText(_translate("MainWindow", "Heslo pro přístup k admin panelu:"))
 
         self.center()
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow_Vytvorit_novou_databazi()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
