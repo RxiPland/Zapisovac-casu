@@ -27,6 +27,37 @@ class Ui_MainWindow_admin_panel(object):
 
         self.label_2.setText("Aktuálně vybraný projekt: " + nazev)
 
+
+    def predelat_datum(self, a):
+
+        list_pismen = list(a)
+
+        pismena_string = ""
+
+        list_pismen_hotovo = []
+
+        for char in list_pismen:
+
+            if char != "-":
+
+                pismena_string = pismena_string + char
+
+            elif char == "-":
+
+                list_pismen_hotovo.append(pismena_string)
+                pismena_string = ""
+
+        list_pismen_hotovo.append(pismena_string)
+
+        den = list_pismen_hotovo[1]
+        mesic = list_pismen_hotovo[2]
+        rok = list_pismen_hotovo[0]
+
+        finalni_string = den + "." + mesic + "." + rok
+
+        return finalni_string
+
+
     
     def info_v_text_editu(self):
 
@@ -112,6 +143,7 @@ class Ui_MainWindow_admin_panel(object):
             vysledek1 = vysledek1[0][0]
 
             prvni_zacatek = str(vysledek1) # datum
+            
 
             sqlstr = "SELECT Zapsani_cas FROM tabulka WHERE ID={prvni_id}".format(prvni_id=prvni_id)
             vysledek1 = cursor.execute(sqlstr).fetchall()
@@ -151,8 +183,13 @@ class Ui_MainWindow_admin_panel(object):
 
                 celkovy_pocet_koncu = int(celkovy_pocet_zacatku)
 
+
+            posledni_zacatek = self.predelat_datum(posledni_zacatek)
+            posledni_konec = self.predelat_datum(posledni_konec)
+            prvni_zacatek = self.predelat_datum(prvni_zacatek)
+
             
-            self.plainTextEdit.setPlainText("Celkový odpracovaný čas: {celkovy_cas}\n\n\nPoslední začátek: {posledni_zacatek}\nPoslední konec: {posledni_konec}\n\n\nDatum prvního začátku: {prvni_zacatek}\n\n\nCelkový počet začátků: {celkovy_pocet_zacatku}\nCelkový počet konců: {celkovy_pocet_koncu}".format(celkovy_cas = "NIC", posledni_zacatek = posledni_zacatek + " " + posledni_zacatek_cas, posledni_konec = posledni_konec + " " + posledni_konec_cas, prvni_zacatek = prvni_zacatek +  " " + prvni_zacatek_cas, celkovy_pocet_zacatku = celkovy_pocet_zacatku, celkovy_pocet_koncu = celkovy_pocet_koncu))
+            self.plainTextEdit.setPlainText("Celkový odpracovaný čas: {celkovy_cas}\n\n\nPoslední začátek: {posledni_zacatek}\nPoslední konec: {posledni_konec}\n\n\nDatum úplně prvního začátku: {prvni_zacatek}\n\n\nCelkový počet začátků: {celkovy_pocet_zacatku}\nCelkový počet konců: {celkovy_pocet_koncu}".format(celkovy_cas = "NIC", posledni_zacatek = posledni_zacatek + " " + posledni_zacatek_cas, posledni_konec = posledni_konec + " " + posledni_konec_cas, prvni_zacatek = prvni_zacatek +  " " + prvni_zacatek_cas, celkovy_pocet_zacatku = celkovy_pocet_zacatku, celkovy_pocet_koncu = celkovy_pocet_koncu))
 
 
 

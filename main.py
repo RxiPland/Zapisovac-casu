@@ -462,5 +462,6 @@ if __name__ == "__main__":
     admin1.pushButton_3.clicked.connect(admin1.tlacitko_odejit)
     heslo.pushButton.clicked.connect(heslo.overeni_hesla)
     heslo.pushButton_2.clicked.connect(heslo.odejit)
+    heslo.lineEdit.returnPressed.connect(heslo.overeni_hesla)
     app.aboutToQuit.connect(hl_menu.ukoncit)
     sys.exit(app.exec_())
