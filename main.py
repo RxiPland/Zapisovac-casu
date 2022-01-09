@@ -353,7 +353,7 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
     def admin_panel_start(self):
 
         nazev = str(vyber_db1.comboBox.currentText())
-
+    
         self.nazev_projektu(nazev)
         
         heslo.close()
@@ -390,25 +390,85 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
     def zobrazit_okno(self):
 
-        hl_menu.close()
-        hl_menu.center()
-
         nazev = str(vyber_db1.comboBox.currentText())
+        
+        connection = sqlite3.connect(nazev + '.db')
+        cursor = connection.cursor()
 
-        existuje = exists(nazev + ".heslo")
+        sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
+        vysledek1 = cursor.execute(sqlstr).fetchall()
 
-        if existuje == True:
+        try:
 
-            self.lineEdit.clear()
-            heslo.center()
-            heslo.show()
+            posledni_id = int(vysledek1[0][0])
 
-        elif existuje == False:
+        except:
 
-            admin1.admin_panel_start()
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Je nutné alespoň jednou zapsat začátek a konec")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            return
+            
+
+        sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
+        vysledek1 = cursor.execute(sqlstr).fetchall()
+
+        connection.commit()
+        cursor.close()
+
+        vysledek1 = vysledek1[0][0]
+
+        ukonceni_chyba = ""
+
+        try:
+
+            posledni_datum_ukonceni = str(vysledek1)
+
+            if posledni_datum_ukonceni == "None":
+
+                ukonceni_chyba = "ZADNE_NENI"
+
+        except:
+
+            ukonceni_chyba = "ZADNE_NENI"
+
+        if ukonceni_chyba == "ZADNE_NENI":
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Pro přístup ke statistikám je nutné zapsat konec!")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+        else:
+
+        
+
+            hl_menu.close()
+            hl_menu.center()
+
+            nazev = str(vyber_db1.comboBox.currentText())
+
+            existuje = exists(nazev + ".heslo")
+
+            if existuje == True:
+
+                self.lineEdit.clear()
+                heslo.center()
+                heslo.show()
+
+            elif existuje == False:
+
+                admin1.admin_panel_start()
 
 
     def overeni_hesla(self):
+        
 
         heslo = str(self.lineEdit.text())
         nazev = str(vyber_db1.comboBox.currentText())

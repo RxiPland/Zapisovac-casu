@@ -28,6 +28,38 @@ class Ui_MainWindow_admin_panel(object):
         self.label_2.setText("Aktuálně vybraný projekt: " + nazev)
 
 
+    def predelat_cas(self, a):
+
+        list_pismen = list(a)
+
+        pismena_string = ""
+
+        list_pismen_hotovo = []
+
+        for char in list_pismen:
+
+            if char != ":":
+
+                pismena_string = pismena_string + char
+
+            elif char == ":":
+
+                list_pismen_hotovo.append(pismena_string)
+                pismena_string = ""
+
+        list_pismen_hotovo.append(pismena_string)
+
+        hodiny = int(list_pismen_hotovo[0])
+        minuty = int(list_pismen_hotovo[1])
+        vteriny = int(list_pismen_hotovo[2])
+
+        cas_vteriny = (hodiny*60*60) + (minuty*60) + vteriny
+
+        return cas_vteriny
+
+        
+
+
     def predelat_datum(self, a):
 
         list_pismen = list(a)
@@ -57,11 +89,52 @@ class Ui_MainWindow_admin_panel(object):
 
         return finalni_string
 
+    
 
+
+    def vypocitat_celkovy_cas(self, prvniId, posledniId):
+
+        connection = sqlite3.connect(nazev + '.db')
+        cursor = connection.cursor()
+
+        pocitadlo1 = prvniId
+
+        finalni_cas = 0
+
+        while pocitadlo1 <= posledniId:
+
+            sqlstr = "SELECT Zapsani_cas FROM tabulka WHERE ID={vybrane_id}".format(vybrane_id=pocitadlo1)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            posledni_zacatek_cas = str(vysledek1) # čas
+
+            predelany_cas_zacatek = self.predelat_cas(posledni_zacatek_cas)
+
+
+            sqlstr = "SELECT Odepsani_cas FROM tabulka WHERE ID={vybrane_id}".format(vybrane_id=pocitadlo1)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0]
+
+            posledni_konec_cas = str(vysledek1) # čas
+
+            predelany_cas_konec = self.predelat_cas(posledni_konec_cas)
+
+            finalni_cas = int(finalni_cas) + int(predelany_cas_konec-predelany_cas_zacatek)
+
+            pocitadlo1 += 1
+
+
+        connection.commit()
+        cursor.close()
+
+        return str(finalni_cas) + "s"
     
     def info_v_text_editu(self):
 
-        #celkovy_odpracovany_cas -
+        #celkovy_odpracovany_cas - funguje pouze když se vejde do jednoho dne (když projde přes půlnoc - nefunguje)
 
         # posledni_zacatek - MÁM
 
@@ -98,6 +171,7 @@ class Ui_MainWindow_admin_panel(object):
 
             posledni_zacatek = str(vysledek1) # datum
 
+
             sqlstr = "SELECT Zapsani_cas FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
             vysledek1 = cursor.execute(sqlstr).fetchall()
 
@@ -120,22 +194,6 @@ class Ui_MainWindow_admin_panel(object):
 
             posledni_konec_cas = str(vysledek1) # čas
 
-            if posledni_konec == "None":
-
-                sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id-1)
-                vysledek1 = cursor.execute(sqlstr).fetchall()
-
-                vysledek1 = vysledek1[0][0]
-
-                posledni_konec = str(vysledek1) # datum
-
-                sqlstr = "SELECT Odepsani_cas FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id-1)
-                vysledek1 = cursor.execute(sqlstr).fetchall()
-
-                vysledek1 = vysledek1[0][0]
-
-                posledni_konec_cas = str(vysledek1) # čas
-
 
             sqlstr = "SELECT Zapsani FROM tabulka WHERE ID={prvni_id}".format(prvni_id=prvni_id)
             vysledek1 = cursor.execute(sqlstr).fetchall()
@@ -153,43 +211,22 @@ class Ui_MainWindow_admin_panel(object):
             prvni_zacatek_cas = str(vysledek1) # čas
 
 
+
+
             celkovy_pocet_zacatku = int(posledni_id)
 
-
-            sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={posledni_id}".format(posledni_id=posledni_id)
-            vysledek1 = cursor.execute(sqlstr).fetchall()
-
-            vysledek1 = vysledek1[0][0]
-
-            try:
-
-                posledni_datum_odepsani1 = str(vysledek1)
-
-                if posledni_datum_odepsani1 == "None":
-
-                    posledni_datum_odepsani1 = "ZADNE_NENI"
-
-
-            except:
-
-                posledni_datum_odepsani1 = "ZADNE_NENI"
-
-
-            if posledni_datum_odepsani1 == "ZADNE_NENI":
-
-                celkovy_pocet_koncu = int(celkovy_pocet_zacatku) - 1
-
-            else:
-
-                celkovy_pocet_koncu = int(celkovy_pocet_zacatku)
+            celkovy_pocet_koncu = int(posledni_id)
 
 
             posledni_zacatek = self.predelat_datum(posledni_zacatek)
             posledni_konec = self.predelat_datum(posledni_konec)
             prvni_zacatek = self.predelat_datum(prvni_zacatek)
 
+
+            celkovy_cas = self.vypocitat_celkovy_cas(prvni_id, posledni_id)
+
             
-            self.plainTextEdit.setPlainText("Celkový odpracovaný čas: {celkovy_cas}\n\n\nPoslední začátek: {posledni_zacatek}\nPoslední konec: {posledni_konec}\n\n\nDatum úplně prvního začátku: {prvni_zacatek}\n\n\nCelkový počet začátků: {celkovy_pocet_zacatku}\nCelkový počet konců: {celkovy_pocet_koncu}".format(celkovy_cas = "NIC", posledni_zacatek = posledni_zacatek + " " + posledni_zacatek_cas, posledni_konec = posledni_konec + " " + posledni_konec_cas, prvni_zacatek = prvni_zacatek +  " " + prvni_zacatek_cas, celkovy_pocet_zacatku = celkovy_pocet_zacatku, celkovy_pocet_koncu = celkovy_pocet_koncu))
+            self.plainTextEdit.setPlainText("Celkový odpracovaný čas: {celkovy_cas}\n\n\nPoslední začátek: {posledni_zacatek}\nPoslední konec: {posledni_konec}\n\n\nDatum úplně prvního začátku: {prvni_zacatek}\n\n\nCelkový počet začátků: {celkovy_pocet_zacatku}\nCelkový počet konců: {celkovy_pocet_koncu}".format(celkovy_cas = celkovy_cas, posledni_zacatek = posledni_zacatek + " " + posledni_zacatek_cas, posledni_konec = posledni_konec + " " + posledni_konec_cas, prvni_zacatek = prvni_zacatek +  " " + prvni_zacatek_cas, celkovy_pocet_zacatku = celkovy_pocet_zacatku, celkovy_pocet_koncu = celkovy_pocet_koncu))
 
 
 
