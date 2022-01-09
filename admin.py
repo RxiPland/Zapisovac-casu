@@ -2,7 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox
 import sqlite3
 from os.path import exists
-from datetime import date
+import datetime
+import time
 
 class Ui_MainWindow_admin_panel(object):
 
@@ -28,7 +29,7 @@ class Ui_MainWindow_admin_panel(object):
         self.label_2.setText("Aktuálně vybraný projekt: " + nazev)
 
 
-    def predelat_cas(self, a):
+    def predelat_cas(self, a, b):
 
         list_pismen = list(a)
 
@@ -53,14 +54,20 @@ class Ui_MainWindow_admin_panel(object):
         minuty = int(list_pismen_hotovo[1])
         vteriny = int(list_pismen_hotovo[2])
 
-        cas_vteriny = (hodiny*60*60) + (minuty*60) + vteriny
+        if b == "rozdelene":
 
-        return cas_vteriny
+            cas_finalni = [hodiny, minuty, vteriny]
+
+        else:
+
+            cas_finalni = (hodiny*60*60) + (minuty*60) + vteriny
+
+        return cas_finalni
 
         
 
 
-    def predelat_datum(self, a):
+    def predelat_datum(self, a, b):
 
         list_pismen = list(a)
 
@@ -81,11 +88,19 @@ class Ui_MainWindow_admin_panel(object):
 
         list_pismen_hotovo.append(pismena_string)
 
-        den = list_pismen_hotovo[1]
-        mesic = list_pismen_hotovo[2]
-        rok = list_pismen_hotovo[0]
+        den = int(list_pismen_hotovo[1])
+        mesic = int(list_pismen_hotovo[2])
+        rok = int(list_pismen_hotovo[0])
 
-        finalni_string = den + "." + mesic + "." + rok
+        if b != "rozdelene":
+
+            finalni_string = str(den) + "." + str(mesic) + "." + str(rok)
+
+        else:
+
+            finalni_string = [den, mesic, rok]
+
+            print(finalni_string)
 
         return finalni_string
 
@@ -103,6 +118,25 @@ class Ui_MainWindow_admin_panel(object):
 
         while pocitadlo1 <= posledniId:
 
+
+            sqlstr = "SELECT Zapsani FROM tabulka WHERE ID={vybrane_id}".format(vybrane_id=pocitadlo1)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0] # datum
+
+            datum1_zapsani = self.predelat_datum(vysledek1, "rozdelene")
+
+
+            sqlstr = "SELECT Odepsani FROM tabulka WHERE ID={vybrane_id}".format(vybrane_id=pocitadlo1)
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            vysledek1 = vysledek1[0][0] # datum
+
+
+            datum1_odepsani = self.predelat_datum(vysledek1, "rozdelene")
+
+
+
             sqlstr = "SELECT Zapsani_cas FROM tabulka WHERE ID={vybrane_id}".format(vybrane_id=pocitadlo1)
             vysledek1 = cursor.execute(sqlstr).fetchall()
 
@@ -110,7 +144,7 @@ class Ui_MainWindow_admin_panel(object):
 
             posledni_zacatek_cas = str(vysledek1) # čas
 
-            predelany_cas_zacatek = self.predelat_cas(posledni_zacatek_cas)
+            predelany_cas_zacatek = self.predelat_cas(posledni_zacatek_cas, "rozdelene")
 
 
             sqlstr = "SELECT Odepsani_cas FROM tabulka WHERE ID={vybrane_id}".format(vybrane_id=pocitadlo1)
@@ -120,9 +154,16 @@ class Ui_MainWindow_admin_panel(object):
 
             posledni_konec_cas = str(vysledek1) # čas
 
-            predelany_cas_konec = self.predelat_cas(posledni_konec_cas)
+            predelany_cas_konec = self.predelat_cas(posledni_konec_cas, "rozdelene")
 
-            finalni_cas = int(finalni_cas) + int(predelany_cas_konec-predelany_cas_zacatek)
+
+
+            datum1_zapsani_dny = datetime.datetime(datum1_zapsani[2], datum1_zapsani[0], datum1_zapsani[1], predelany_cas_zacatek[0], predelany_cas_zacatek[1], predelany_cas_zacatek[2])
+
+            datum1_odepsani_dny = datetime.datetime(datum1_odepsani[2], datum1_odepsani[0], datum1_odepsani[1], predelany_cas_konec[0], predelany_cas_konec[1], predelany_cas_konec[2])
+
+
+            finalni_cas = datum1_odepsani_dny - datum1_zapsani_dny
 
             pocitadlo1 += 1
 
@@ -130,11 +171,13 @@ class Ui_MainWindow_admin_panel(object):
         connection.commit()
         cursor.close()
 
-        return str(finalni_cas) + "s"
+        print(finalni_cas)
+
+        return str(finalni_cas)
     
     def info_v_text_editu(self):
 
-        #celkovy_odpracovany_cas - funguje pouze když se vejde do jednoho dne (když projde přes půlnoc - nefunguje)
+        #celkovy_odpracovany_cas - funguje na 90% - bylo by lepší dodělat lepší zobrazení datumu (aktuální formát vypadá jak hodiny x Days, Hh:Mm:Ss - já chci v češtině a místo : mezery)
 
         # posledni_zacatek - MÁM
 
@@ -218,9 +261,9 @@ class Ui_MainWindow_admin_panel(object):
             celkovy_pocet_koncu = int(posledni_id)
 
 
-            posledni_zacatek = self.predelat_datum(posledni_zacatek)
-            posledni_konec = self.predelat_datum(posledni_konec)
-            prvni_zacatek = self.predelat_datum(prvni_zacatek)
+            posledni_zacatek = self.predelat_datum(posledni_zacatek, "")
+            posledni_konec = self.predelat_datum(posledni_konec, "")
+            prvni_zacatek = self.predelat_datum(prvni_zacatek, "")
 
 
             celkovy_cas = self.vypocitat_celkovy_cas(prvni_id, posledni_id)
