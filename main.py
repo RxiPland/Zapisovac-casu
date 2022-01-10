@@ -10,7 +10,8 @@ from admin import Ui_MainWindow_admin_panel
 from hlavni_menu import Ui_MainWindow_hlavnimenu
 from overit_heslo import Ui_MainWindow_overit_heslo
 from zmena_hesla import Ui_MainWindow_Zmena_hesla_pro_admina
-from os import execl, remove
+from zmena_nazvu import Ui_MainWindow_Zmena_nazvu_projektu
+from os import execl, remove, rename
 from os.path import exists
 import sqlite3
 import hashlib
@@ -370,6 +371,11 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
         hl_menu.center()
         hl_menu.show()
 
+    
+    def smazat_databazi(self):
+
+        pass
+
 
 class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
@@ -470,10 +476,11 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
     def overeni_hesla(self):
 
-        global kamDal
+        global kamDal, nove_jmeno
         
 
         heslo = str(self.lineEdit.text())
+        
         nazev = str(vyber_db1.comboBox.currentText())
 
 
@@ -607,6 +614,7 @@ class zmena_heslaAdmin(QMainWindow, Ui_MainWindow_Zmena_hesla_pro_admina):
 
     def kontrola_hesla_souboru(self):
 
+
         nazev = str(vyber_db1.comboBox.currentText())
 
         existuje = exists(nazev + ".heslo")
@@ -634,7 +642,128 @@ class zmena_heslaAdmin(QMainWindow, Ui_MainWindow_Zmena_hesla_pro_admina):
             zmenaHesla.show()
 
 
+
+class zmena_nazvu_projektu(QMainWindow, Ui_MainWindow_Zmena_nazvu_projektu):
+
+
+    def __init__(self, *args, **kwargs):
+
+        QMainWindow.__init__(self, *args, **kwargs)
+        self.setupUi(self)
+
+    def zpet_do_admin_panelu(self):
+
+        zmenaNazvu.close()
+        zmenaNazvu.center()
+        zmenaNazvu.lineEdit.clear()
+
+        admin1.center()
+        admin1.show()
+
+
+    def restart_pro_zmeny(self):
+
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Question)
+        msgBox.setWindowTitle("Oznámení")
+        msgBox.setText("Pro aplikování změn provedu restart")
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec()
+
+        python = sys.executable
+        execl(python, python, * sys.argv)
+
+
+    def otevrit_okno(self):
         
+        admin1.close()
+        admin1.center()
+
+        nazev = str(vyber_db1.comboBox.currentText())
+
+        zmenaNazvu.priradit_stary_nazev_projektu(nazev)
+
+        zmenaNazvu.center()
+        zmenaNazvu.lineEdit.clear()
+        zmenaNazvu.show()
+
+
+    def zmenit_nazev(self):
+
+        nove_jmeno = str(zmenaNazvu.lineEdit.text())
+        stare_jmeno = str(vyber_db1.comboBox.currentText())
+
+        if nove_jmeno == stare_jmeno:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Chyba")
+            msgBox.setText("Nový název je stejný jako starý! Vymyslete prosím nový.")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            return
+
+        elif nove_jmeno != stare_jmeno and nove_jmeno != "":
+
+            existujeDb = exists(stare_jmeno + ".db")
+            existujeHeslo = exists(stare_jmeno + ".heslo")
+
+            if existujeDb == True and existujeHeslo == True:
+
+                rename(stare_jmeno + ".db", nove_jmeno + ".db")
+                rename(stare_jmeno + ".heslo", nove_jmeno + ".heslo")
+
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Question)
+                msgBox.setWindowTitle("Oznámení")
+                msgBox.setText("Projekt byl úspěšně přejmenován")
+                msgBox.setStandardButtons(QMessageBox.Ok)
+                msgBox.exec()
+
+                admin1.nazev_projektu(nove_jmeno)
+
+                zmenaNazvu.restart_pro_zmeny()
+
+
+            elif existujeDb == True and existujeHeslo == False:
+
+                rename(stare_jmeno + ".db", nove_jmeno + ".db")
+
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Question)
+                msgBox.setWindowTitle("Oznámení")
+                msgBox.setText("Projekt byl úspěšně přejmenován")
+                msgBox.setStandardButtons(QMessageBox.Ok)
+                msgBox.exec()
+
+                admin1.nazev_projektu(nove_jmeno)
+
+                zmenaNazvu.restart_pro_zmeny()
+
+            else:
+
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Warning)
+                msgBox.setWindowTitle("Problém")
+                msgBox.setText("Nastala chyba při změně názvů!\n\n1) Databáze byla odstraněna\n2) Název obsahuje nepovolené znaky")
+                msgBox.setStandardButtons(QMessageBox.Ok)
+                msgBox.exec()
+
+                return
+
+        else:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Název nemůže být prázdný!")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            return
+
+
 
 
 if __name__ == "__main__":
@@ -646,6 +775,7 @@ if __name__ == "__main__":
     admin1 = admin_panel()
     heslo_overeni = overeni_hesla()
     zmenaHesla = zmena_heslaAdmin()
+    zmenaNazvu = zmena_nazvu_projektu()
     global kamDal
     kamDal = "NORMAL"
     vyber_db1.pro_zacatek()
@@ -658,10 +788,15 @@ if __name__ == "__main__":
     hl_menu.pushButton_3.clicked.connect(heslo_overeni.zobrazit_okno)
     admin1.pushButton.clicked.connect(zmenaHesla.kontrola_hesla_souboru)
     admin1.pushButton_3.clicked.connect(admin1.tlacitko_odejit)
+    admin1.pushButton_4.clicked.connect(zmenaNazvu.otevrit_okno)
     heslo_overeni.pushButton.clicked.connect(heslo_overeni.overeni_hesla)
     heslo_overeni.pushButton_2.clicked.connect(heslo_overeni.odejit)
     heslo_overeni.lineEdit.returnPressed.connect(heslo_overeni.overeni_hesla)
     zmenaHesla.pushButton.clicked.connect(zmenaHesla.zmenit_heslo)
+    zmenaHesla.lineEdit.returnPressed.connect(zmenaHesla.zmenit_heslo)
     zmenaHesla.pushButton_2.clicked.connect(zmenaHesla.zpetDoAdminPanelu)
+    zmenaNazvu.pushButton.clicked.connect(zmenaNazvu.zmenit_nazev)
+    zmenaNazvu.lineEdit.returnPressed.connect(zmenaNazvu.zmenit_nazev)
+    zmenaNazvu.pushButton_2.clicked.connect(zmenaNazvu.zpet_do_admin_panelu)
     app.aboutToQuit.connect(hl_menu.ukoncit)
     sys.exit(app.exec_())

@@ -1,8 +1,22 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox
 
 class Ui_MainWindow_Zmena_nazvu_projektu(object):
 
+
+    def center(self):
+
+        # funkce, která přesune okno programu do prostřed obrazovky
+
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    
+    def priradit_stary_nazev_projektu(self, nazev):
+
+        self.label_2.setText("Staré jméno: " + nazev)
 
 
     def setupUi(self, MainWindow):
@@ -68,7 +82,7 @@ class Ui_MainWindow_Zmena_nazvu_projektu(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Změna jména projektu"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Změna názvu projektu"))
         self.label.setText(_translate("MainWindow", "Zadejte nový název projektu:"))
         self.pushButton.setText(_translate("MainWindow", "Potvrdit"))
         self.pushButton_2.setText(_translate("MainWindow", "Zrušit"))
