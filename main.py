@@ -374,7 +374,60 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
     
     def smazat_databazi(self):
 
-        pass
+        nazev = str(vyber_db1.comboBox.currentText())
+
+        existujeDb = exists(nazev + ".db")
+        existujeHeslo = exists(nazev + ".heslo")
+
+        if existujeDb == False:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Databáze, kterou chcete smazat neexistuje")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            return
+
+        elif existujeDb == True:
+
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Opravdu chcete smazat projekt: " + nazev)
+            msgBox.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
+            buttonY = msgBox.button(QMessageBox.Yes)
+            buttonY.setText("Smazat")
+            buttonN = msgBox.button(QMessageBox.No)
+            buttonN.setText("Zrušit")
+
+            returnValue = msgBox.exec()
+
+
+            if returnValue == QMessageBox.Yes:
+
+                remove(nazev + ".db")
+
+                if existujeHeslo == True:
+
+                    remove(nazev + ".heslo")
+
+            elif returnValue == QMessageBox.No:
+
+                return
+
+
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Question)
+        msgBox.setWindowTitle("Oznámení")
+        msgBox.setText("Projekt byl úspěšně smazán.\n\nRestartuji program")
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec()
+
+        python = sys.executable
+        execl(python, python, * sys.argv)
 
 
 class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
@@ -476,7 +529,7 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
     def overeni_hesla(self):
 
-        global kamDal, nove_jmeno
+        global kamDal
         
 
         heslo = str(self.lineEdit.text())
@@ -787,6 +840,7 @@ if __name__ == "__main__":
     hl_menu.pushButton_2.clicked.connect(hl_menu.kontrola_chyb_konec)
     hl_menu.pushButton_3.clicked.connect(heslo_overeni.zobrazit_okno)
     admin1.pushButton.clicked.connect(zmenaHesla.kontrola_hesla_souboru)
+    admin1.pushButton_2.clicked.connect(admin1.smazat_databazi)
     admin1.pushButton_3.clicked.connect(admin1.tlacitko_odejit)
     admin1.pushButton_4.clicked.connect(zmenaNazvu.otevrit_okno)
     heslo_overeni.pushButton.clicked.connect(heslo_overeni.overeni_hesla)

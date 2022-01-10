@@ -481,7 +481,7 @@ class Ui_MainWindow_admin_panel(object):
         self.pushButton.setText(_translate("MainWindow", "Změnit heslo"))
         self.plainTextEdit.setPlainText(_translate("MainWindow", "Celkový odpracovaný čas: \n\n\nPoslední začátek: \nPoslední konec: \n\n\nDatum prvního začátku: \n\n\nCelkový počet začátků: \nCelkový počet konců: "))
         self.label.setText(_translate("MainWindow", "Statistiky:"))
-        self.pushButton_2.setText(_translate("MainWindow", "Vymazat databázi i s daty"))
+        self.pushButton_2.setText(_translate("MainWindow", "Smazat tento projekt"))
         self.pushButton_3.setText(_translate("MainWindow", "Odejít"))
         self.label_2.setText(_translate("MainWindow", "Aktuálně vybraný projekt:"))
         self.pushButton_4.setText(_translate("MainWindow", "Změnit název projektu"))
