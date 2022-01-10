@@ -20,3 +20,13 @@ Bylo by vhodné dát program do složky, protože se na stejném místě vytvoř
 ```
 pip install PyQt5
 ```
+
+# Náhled:
+
+![screen1](https://user-images.githubusercontent.com/82058894/148750531-a5be1b91-1bff-486e-9694-e1d06ac16816.png)
+
+![screen2](https://user-images.githubusercontent.com/82058894/148751257-2115e1fe-3660-4575-b2d6-2c13a5e48303.png)
+
+![screen3](https://user-images.githubusercontent.com/82058894/148751420-421ddd96-58d1-4e9a-8514-fc26ebdcedae.png)
+
+![screen4](https://user-images.githubusercontent.com/82058894/148753378-38c5e4d3-b883-4e78-96cb-ec9d70e5f154.png)
