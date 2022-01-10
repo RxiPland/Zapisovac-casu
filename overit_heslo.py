@@ -74,7 +74,7 @@ class Ui_MainWindow_overit_heslo(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Ověření hesla"))
-        self.label.setText(_translate("MainWindow", "Zadejte heslo:"))
+        self.label.setText(_translate("MainWindow", "Zadejte heslo pro ověření:"))
         self.pushButton.setText(_translate("MainWindow", "Potvrdit"))
         self.pushButton_2.setText(_translate("MainWindow", "Zrušit"))
 

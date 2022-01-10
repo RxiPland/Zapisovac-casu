@@ -9,7 +9,8 @@ from vytvorit_novou_db import Ui_MainWindow_Vytvorit_novou_databazi
 from admin import Ui_MainWindow_admin_panel
 from hlavni_menu import Ui_MainWindow_hlavnimenu
 from overit_heslo import Ui_MainWindow_overit_heslo
-from os import execl
+from zmena_hesla import Ui_MainWindow_Zmena_hesla_pro_admina
+from os import execl, remove
 from os.path import exists
 import sqlite3
 import hashlib
@@ -356,8 +357,8 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
     
         self.nazev_projektu(nazev)
         
-        heslo.close()
-        heslo.center()
+        heslo_overeni.close()
+        heslo_overeni.center()
         admin1.center()
         admin1.info_v_text_editu()
         admin1.show()
@@ -380,9 +381,9 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
     def odejit(self):
 
-        heslo.close()
-        heslo.center()
-        heslo.lineEdit.clear()
+        heslo_overeni.close()
+        heslo_overeni.center()
+        heslo_overeni.lineEdit.clear()
 
         hl_menu.center()
         hl_menu.show()
@@ -459,8 +460,8 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
             if existuje == True:
 
                 self.lineEdit.clear()
-                heslo.center()
-                heslo.show()
+                heslo_overeni.center()
+                heslo_overeni.show()
 
             elif existuje == False:
 
@@ -468,6 +469,8 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
 
     def overeni_hesla(self):
+
+        global kamDal
         
 
         heslo = str(self.lineEdit.text())
@@ -484,7 +487,17 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
             hash_zadaneho_hesla = hashlib.sha256(heslo.encode())
             hex_dig = str(hash_zadaneho_hesla.hexdigest())
 
-            if hex_dig == heslo_hash:
+            if hex_dig == heslo_hash and kamDal == "ZMENA_HESLA":
+
+                heslo_overeni.close()
+                heslo_overeni.center()
+                heslo_overeni.lineEdit.clear()
+
+                zmenaHesla.lineEdit.clear()
+                zmenaHesla.center()
+                zmenaHesla.show()
+
+            elif hex_dig == heslo_hash:
 
                 admin1.admin_panel_start()
 
@@ -499,8 +512,129 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
 
         elif existuje == False:
-
+            
             admin1.admin_panel_start()
+
+
+
+class zmena_heslaAdmin(QMainWindow, Ui_MainWindow_Zmena_hesla_pro_admina):
+
+
+    def __init__(self, *args, **kwargs):
+
+        QMainWindow.__init__(self, *args, **kwargs)
+        self.setupUi(self)
+
+
+    def zpetDoAdminPanelu(self):
+
+        zmenaHesla.close()
+        zmenaHesla.lineEdit.clear()
+        zmenaHesla.center()
+        admin1.center()
+        admin1.show()
+
+
+    def zmenit_heslo(self):
+
+        nove_heslo = str(zmenaHesla.lineEdit.text())
+        nazev = str(vyber_db1.comboBox.currentText())
+
+        existuje = exists(nazev + ".heslo")
+
+        if nove_heslo == "" and existuje == True:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Od teď se přihlašujete bez hesla (heslo bylo odstraněno)")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            remove(nazev + ".heslo")
+
+        elif nove_heslo != "" and existuje == True:
+
+            hash_hesla = hashlib.sha256(nove_heslo.encode())
+            hex_dig = hash_hesla.hexdigest()
+
+            with open(nazev + ".heslo", "w") as output:
+
+                output.write(str(hex_dig))
+
+            
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Staré heslo bylo změněno na nové")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+        elif nove_heslo != "" and existuje == False:
+            
+            hash_hesla = hashlib.sha256(nove_heslo.encode())
+            hex_dig = hash_hesla.hexdigest()
+
+            with open(nazev + ".heslo", "w") as output:
+
+                output.write(str(hex_dig))
+
+            
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Od teď se budete přihlašovat pod heslem\n\n(Dříve heslo nebylo nastaveno)")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+
+        else:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Heslo není potřeba měnit\n\n(Znovu bylo zadáno prázdné pole = žádné heslo)")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+
+        global kamDal
+
+        kamDal = "NORMALNE"
+
+        zmenaHesla.zpetDoAdminPanelu()
+
+
+    def kontrola_hesla_souboru(self):
+
+        nazev = str(vyber_db1.comboBox.currentText())
+
+        existuje = exists(nazev + ".heslo")
+
+        if existuje == True:
+
+            admin1.close()
+            admin1.center()
+
+            global kamDal
+
+            kamDal = "ZMENA_HESLA"
+
+            heslo_overeni.lineEdit.clear()
+            heslo_overeni.center()
+            heslo_overeni.show()
+        
+        elif existuje == False:
+
+            admin1.close()
+            admin1.center()
+
+            zmenaHesla.lineEdit.clear()
+            zmenaHesla.center()
+            zmenaHesla.show()
+
+
+        
 
 
 if __name__ == "__main__":
@@ -510,7 +644,10 @@ if __name__ == "__main__":
     vytvorit_novou = vytvorit_databazi()
     hl_menu = hlavni_menu()
     admin1 = admin_panel()
-    heslo = overeni_hesla()
+    heslo_overeni = overeni_hesla()
+    zmenaHesla = zmena_heslaAdmin()
+    global kamDal
+    kamDal = "NORMAL"
     vyber_db1.pro_zacatek()
     vyber_db1.pushButton.clicked.connect(vytvorit_novou.otevrit_okno)
     vyber_db1.comboBox.activated.connect(vyber_db1.potvrdit_nacteni_databaze)
@@ -518,10 +655,13 @@ if __name__ == "__main__":
     vytvorit_novou.pushButton_2.clicked.connect(vyber_db1.tlacitko_zpet)
     hl_menu.pushButton.clicked.connect(hl_menu.kontrola_chyb_zacatek)
     hl_menu.pushButton_2.clicked.connect(hl_menu.kontrola_chyb_konec)
-    hl_menu.pushButton_3.clicked.connect(heslo.zobrazit_okno)
+    hl_menu.pushButton_3.clicked.connect(heslo_overeni.zobrazit_okno)
+    admin1.pushButton.clicked.connect(zmenaHesla.kontrola_hesla_souboru)
     admin1.pushButton_3.clicked.connect(admin1.tlacitko_odejit)
-    heslo.pushButton.clicked.connect(heslo.overeni_hesla)
-    heslo.pushButton_2.clicked.connect(heslo.odejit)
-    heslo.lineEdit.returnPressed.connect(heslo.overeni_hesla)
+    heslo_overeni.pushButton.clicked.connect(heslo_overeni.overeni_hesla)
+    heslo_overeni.pushButton_2.clicked.connect(heslo_overeni.odejit)
+    heslo_overeni.lineEdit.returnPressed.connect(heslo_overeni.overeni_hesla)
+    zmenaHesla.pushButton.clicked.connect(zmenaHesla.zmenit_heslo)
+    zmenaHesla.pushButton_2.clicked.connect(zmenaHesla.zpetDoAdminPanelu)
     app.aboutToQuit.connect(hl_menu.ukoncit)
     sys.exit(app.exec_())

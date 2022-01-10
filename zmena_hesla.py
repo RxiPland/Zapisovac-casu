@@ -1,8 +1,18 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox
 
 
 class Ui_MainWindow_Zmena_hesla_pro_admina(object):
 
+
+    def center(self):
+
+        # funkce, která přesune okno programu do prostřed obrazovky
+
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
 
     def setupUi(self, MainWindow):
@@ -33,9 +43,9 @@ class Ui_MainWindow_Zmena_hesla_pro_admina(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.lineEdit.setFont(font)
-        self.lineEdit.setText("")
         self.lineEdit.setMaxLength(100)
         self.lineEdit.setObjectName("lineEdit")
+        self.lineEdit.setPlaceholderText("nechte prázdné pro žádné heslo")
 
 
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)

@@ -32,34 +32,15 @@ class Ui_MainWindow_admin_panel(object):
 
     def udelat_hezci_datum(self, datum):
 
-        # 8003 days, 19:30:31
+        # 15 days, 19:30:31
 
-        if "days," in datum:
+        if " days," in datum:
 
-            datum = datum.replace("days,", "dní")
+            datum = datum.replace(" days,", "dní")
 
-            # 8003 dní 19:30:31
 
-            datum_char = list(datum)
+        # 15dní 19:30:31
 
-            pocitadlo1 = 1
-            pismena_string = ""
-
-            for char in datum_char:
-
-                if char != " " or pocitadlo1 != 1:
-
-                    pismena_string = pismena_string + char
-
-                elif char == " " and pocitadlo1 == 1:
-
-                    pocitadlo1 = 0
-
-            datum = str(pismena_string)
-
-            
-
-        # 8003dní 19:30:31
 
         datum_char_list = list(datum)
 
@@ -88,7 +69,7 @@ class Ui_MainWindow_admin_panel(object):
 
         pismena_string = pismena_string + "s"
 
-        # 8003dní 19h 30min 31s
+        # 15dní 19h 30min 31s
 
         return str(pismena_string)
 
