@@ -1,7 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox
 import sqlite3
-from os.path import exists
 import datetime
 import webbrowser
 
@@ -32,12 +31,17 @@ class Ui_MainWindow_admin_panel(object):
 
     def udelat_hezci_datum(self, datum):
 
+        # udělá hezčí datum:
+
         # 15 days, 19:30:31
 
         if " days," in datum:
 
             datum = datum.replace(" days,", "dní")
 
+        elif " day," in datum:
+
+            datum = datum.replace(" day,", "den")
 
         # 15dní 19:30:31
 
@@ -75,6 +79,8 @@ class Ui_MainWindow_admin_panel(object):
 
 
     def predelat_cas(self, a, b):
+
+        # rozdělá čas na hodiny, minuty a vteřiny
 
         list_pismen = list(a)
 
@@ -114,6 +120,8 @@ class Ui_MainWindow_admin_panel(object):
 
     def predelat_datum(self, a, b):
 
+        # rozdělá datum na dny, měsíc a rok
+
         list_pismen = list(a)
 
         pismena_string = ""
@@ -133,8 +141,8 @@ class Ui_MainWindow_admin_panel(object):
 
         list_pismen_hotovo.append(pismena_string)
 
-        den = int(list_pismen_hotovo[1])
-        mesic = int(list_pismen_hotovo[2])
+        den = int(list_pismen_hotovo[2])
+        mesic = int(list_pismen_hotovo[1])
         rok = int(list_pismen_hotovo[0])
 
         if b != "rozdelene":
@@ -152,6 +160,8 @@ class Ui_MainWindow_admin_panel(object):
 
 
     def vypocitat_celkovy_cas(self, prvniId, posledniId):
+
+        # vypočítá statistiku "celkový čas" v admin panelu
 
         connection = sqlite3.connect(nazev + '.db')
         cursor = connection.cursor()
@@ -197,9 +207,9 @@ class Ui_MainWindow_admin_panel(object):
 
 
 
-        datum1_zapsani_dny = datetime.datetime(datum1_zapsani[2], datum1_zapsani[0], datum1_zapsani[1], predelany_cas_zacatek[0], predelany_cas_zacatek[1], predelany_cas_zacatek[2])
+        datum1_zapsani_dny = datetime.datetime(datum1_zapsani[2], datum1_zapsani[1], datum1_zapsani[0], predelany_cas_zacatek[0], predelany_cas_zacatek[1], predelany_cas_zacatek[2])
 
-        datum1_odepsani_dny = datetime.datetime(datum1_odepsani[2], datum1_odepsani[0], datum1_odepsani[1], predelany_cas_konec[0], predelany_cas_konec[1], predelany_cas_konec[2])
+        datum1_odepsani_dny = datetime.datetime(datum1_odepsani[2], datum1_odepsani[1], datum1_odepsani[0], predelany_cas_konec[0], predelany_cas_konec[1], predelany_cas_konec[2])
 
 
         finalni_cas = (datum1_odepsani_dny - datum1_zapsani_dny)
@@ -207,6 +217,8 @@ class Ui_MainWindow_admin_panel(object):
         pocitadlo1 += 1
 
         while pocitadlo1 <= posledniId:
+
+            # to stejné co nahoře, akorát už ve smyčce (muselo to začít mimo smyčku)
 
 
             sqlstr = "SELECT Zapsani FROM tabulka WHERE ID={vybrane_id}".format(vybrane_id=pocitadlo1)
@@ -257,7 +269,6 @@ class Ui_MainWindow_admin_panel(object):
 
             pocitadlo1 += 1
 
-
         connection.commit()
         cursor.close()
 
@@ -267,6 +278,8 @@ class Ui_MainWindow_admin_panel(object):
 
 
     def info_v_text_editu(self):
+
+        # vypočítá statistiky v admin panelu a dosadí je
 
         try:
 
@@ -387,6 +400,8 @@ class Ui_MainWindow_admin_panel(object):
 
 
     def zdrojovy_kod(self):
+
+        # otevře web se zdrojovým kódem
 
         webbrowser.open("https://github.com/RxiPland/zapisovac-casu")
 

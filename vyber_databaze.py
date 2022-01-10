@@ -5,6 +5,9 @@ import os
 class Ui_MainWindow_Vyber_db(object):
 
     def center(self):
+
+        # funkce, která přesune okno programu do prostřed obrazovky
+
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
@@ -12,6 +15,8 @@ class Ui_MainWindow_Vyber_db(object):
 
 
     def pridat_policka(self, a):
+
+        # přidá prázdná políčka do boxu v okně: "výběr projektu"
 
         global vsechny_db_list
 
@@ -47,6 +52,8 @@ class Ui_MainWindow_Vyber_db(object):
 
 
     def dosadit_nazev_do_boxu(self):
+
+        # dosadí názvy do předpřipravených polí boxu v okně: "výběr projektu"
 
         pocitadlo2 = int(0)
 

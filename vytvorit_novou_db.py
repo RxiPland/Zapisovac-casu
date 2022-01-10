@@ -9,6 +9,8 @@ class Ui_MainWindow_Vytvorit_novou_databazi(object):
 
     def center(self):
 
+        # funkce, která přesune okno programu do prostřed obrazovky
+
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)

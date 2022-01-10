@@ -216,6 +216,8 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
 
     def kontrola_chyb_zacatek(self):
 
+        # kontroluje postup při zapisování začátku (např. pokud nebyl zapsaný konec, nenechá uživatele zapsat začátek) 
+
         chyby_zacatek = self.zapsat_zacatek()
 
         if chyby_zacatek == "DB_NEEXISTUJE":
@@ -300,6 +302,8 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
 
     def kontrola_chyb_konec(self):
 
+        # kontroluje jestli se může zapsat konec
+
         chyby_konec = self.zapsat_konec()
 
         if chyby_konec == "DB_NEEXISTUJE":
@@ -354,6 +358,8 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
     
     def admin_panel_start(self):
 
+        # otevře okno s admin panelem
+
         nazev = str(vyber_db1.comboBox.currentText())
     
         self.nazev_projektu(nazev)
@@ -366,6 +372,8 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
 
     def tlacitko_odejit(self):
 
+        # tlačítko odejít v admin panelu
+
         admin1.close()
         admin1.center()
         hl_menu.center()
@@ -373,6 +381,8 @@ class admin_panel(QMainWindow, Ui_MainWindow_admin_panel):
 
     
     def smazat_databazi(self):
+
+        # tlačítko smazat projekt v admin panelu
 
         nazev = str(vyber_db1.comboBox.currentText())
 
@@ -440,6 +450,8 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
     def odejit(self):
 
+        # odejít z ověření hesla
+
         heslo_overeni.close()
         heslo_overeni.center()
         heslo_overeni.lineEdit.clear()
@@ -449,6 +461,8 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
 
     def zobrazit_okno(self):
+
+        # kontroluje, jestli může otevřít admin panel (pokud existuje heslo, otevře se nejdříve okno s ověřením hesla)
 
         nazev = str(vyber_db1.comboBox.currentText())
         
@@ -529,6 +543,8 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
     def overeni_hesla(self):
 
+        # určuje, co se stane po zadání hesla (otevře se jiné okno, nebo vyskočí chyba o špatném heslu)
+
         global kamDal
         
 
@@ -588,6 +604,8 @@ class zmena_heslaAdmin(QMainWindow, Ui_MainWindow_Zmena_hesla_pro_admina):
 
     def zpetDoAdminPanelu(self):
 
+        # jde z okna změna hesla zpět do admin panelu
+
         zmenaHesla.close()
         zmenaHesla.lineEdit.clear()
         zmenaHesla.center()
@@ -596,6 +614,10 @@ class zmena_heslaAdmin(QMainWindow, Ui_MainWindow_Zmena_hesla_pro_admina):
 
 
     def zmenit_heslo(self):
+
+        # tohle se spustí po potvrzení nového hesla
+
+        # + zapisuje hash hesla do textoveho dokumentu
 
         nove_heslo = str(zmenaHesla.lineEdit.text())
         nazev = str(vyber_db1.comboBox.currentText())
@@ -667,6 +689,8 @@ class zmena_heslaAdmin(QMainWindow, Ui_MainWindow_Zmena_hesla_pro_admina):
 
     def kontrola_hesla_souboru(self):
 
+        # kontroluje, zda se nachází soubor s heslem
+
 
         nazev = str(vyber_db1.comboBox.currentText())
 
@@ -706,6 +730,8 @@ class zmena_nazvu_projektu(QMainWindow, Ui_MainWindow_Zmena_nazvu_projektu):
 
     def zpet_do_admin_panelu(self):
 
+        # odejde ze změny názvu zpět do admin panelu
+
         zmenaNazvu.close()
         zmenaNazvu.center()
         zmenaNazvu.lineEdit.clear()
@@ -715,6 +741,8 @@ class zmena_nazvu_projektu(QMainWindow, Ui_MainWindow_Zmena_nazvu_projektu):
 
 
     def restart_pro_zmeny(self):
+
+        # zrestartuje celý program
 
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Question)
@@ -728,6 +756,8 @@ class zmena_nazvu_projektu(QMainWindow, Ui_MainWindow_Zmena_nazvu_projektu):
 
 
     def otevrit_okno(self):
+
+        # otevře okno změna názvu a dosadí starý název do labelu
         
         admin1.close()
         admin1.center()
@@ -743,10 +773,16 @@ class zmena_nazvu_projektu(QMainWindow, Ui_MainWindow_Zmena_nazvu_projektu):
 
     def zmenit_nazev(self):
 
+        # když se uživatel rozhodne změnit název projektu
+
+        # změní se název databáze + (pokud existuje) i soubor s heslem
+
         nove_jmeno = str(zmenaNazvu.lineEdit.text())
         stare_jmeno = str(vyber_db1.comboBox.currentText())
 
         if nove_jmeno == stare_jmeno:
+
+            # pokud se nový název rovná starému
 
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Warning)
@@ -764,42 +800,73 @@ class zmena_nazvu_projektu(QMainWindow, Ui_MainWindow_Zmena_nazvu_projektu):
 
             if existujeDb == True and existujeHeslo == True:
 
-                rename(stare_jmeno + ".db", nove_jmeno + ".db")
-                rename(stare_jmeno + ".heslo", nove_jmeno + ".heslo")
+                # databáze i soubor s heslem existují
 
-                msgBox = QMessageBox()
-                msgBox.setIcon(QMessageBox.Question)
-                msgBox.setWindowTitle("Oznámení")
-                msgBox.setText("Projekt byl úspěšně přejmenován")
-                msgBox.setStandardButtons(QMessageBox.Ok)
-                msgBox.exec()
+                try:
 
-                admin1.nazev_projektu(nove_jmeno)
+                    rename(stare_jmeno + ".db", nove_jmeno + ".db")
+                    rename(stare_jmeno + ".heslo", nove_jmeno + ".heslo")
 
-                zmenaNazvu.restart_pro_zmeny()
+                    msgBox = QMessageBox()
+                    msgBox.setIcon(QMessageBox.Question)
+                    msgBox.setWindowTitle("Oznámení")
+                    msgBox.setText("Projekt byl úspěšně přejmenován")
+                    msgBox.setStandardButtons(QMessageBox.Ok)
+                    msgBox.exec()
+
+                    admin1.nazev_projektu(nove_jmeno)
+
+                    zmenaNazvu.restart_pro_zmeny()
+
+                except:
+
+                    msgBox = QMessageBox()
+                    msgBox.setIcon(QMessageBox.Warning)
+                    msgBox.setWindowTitle("Problém")
+                    msgBox.setText("Nastala chyba při změně názvů!\n\n1) Databáze byla odstraněna\n2) Název obsahuje nepovolené znaky\n3) Jiná chyba")
+                    msgBox.setStandardButtons(QMessageBox.Ok)
+                    msgBox.exec()
+
+                    return
+
 
 
             elif existujeDb == True and existujeHeslo == False:
 
-                rename(stare_jmeno + ".db", nove_jmeno + ".db")
+                # pouze databáze existuje (bez hesla)
 
-                msgBox = QMessageBox()
-                msgBox.setIcon(QMessageBox.Question)
-                msgBox.setWindowTitle("Oznámení")
-                msgBox.setText("Projekt byl úspěšně přejmenován")
-                msgBox.setStandardButtons(QMessageBox.Ok)
-                msgBox.exec()
+                try:
 
-                admin1.nazev_projektu(nove_jmeno)
+                    rename(stare_jmeno + ".db", nove_jmeno + ".db")
 
-                zmenaNazvu.restart_pro_zmeny()
+                    msgBox = QMessageBox()
+                    msgBox.setIcon(QMessageBox.Question)
+                    msgBox.setWindowTitle("Oznámení")
+                    msgBox.setText("Projekt byl úspěšně přejmenován")
+                    msgBox.setStandardButtons(QMessageBox.Ok)
+                    msgBox.exec()
+
+                    admin1.nazev_projektu(nove_jmeno)
+
+                    zmenaNazvu.restart_pro_zmeny()
+
+                except:
+
+                    msgBox = QMessageBox()
+                    msgBox.setIcon(QMessageBox.Warning)
+                    msgBox.setWindowTitle("Problém")
+                    msgBox.setText("Nastala chyba při změně názvů!\n\n1) Databáze byla odstraněna\n2) Název obsahuje nepovolené znaky\n3) Jiná chyba")
+                    msgBox.setStandardButtons(QMessageBox.Ok)
+                    msgBox.exec()
+
+                    return
 
             else:
 
                 msgBox = QMessageBox()
                 msgBox.setIcon(QMessageBox.Warning)
                 msgBox.setWindowTitle("Problém")
-                msgBox.setText("Nastala chyba při změně názvů!\n\n1) Databáze byla odstraněna\n2) Název obsahuje nepovolené znaky")
+                msgBox.setText("Nastala chyba při změně názvů!\n\n1) Databáze byla odstraněna\n2) Název obsahuje nepovolené znaky\n3) Jiná chyba")
                 msgBox.setStandardButtons(QMessageBox.Ok)
                 msgBox.exec()
 
