@@ -82,13 +82,3 @@ class Ui_MainWindow_poznamky_okno(object):
         self.pushButton.setText(_translate("MainWindow", "Uložit a odejít"))
         self.pushButton_2.setText(_translate("MainWindow", "Zrušit"))
         self.pushButton_3.setText(_translate("MainWindow", "Vymazat"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow_poznamky_okno()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
