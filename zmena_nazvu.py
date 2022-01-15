@@ -39,7 +39,7 @@ class Ui_MainWindow_Zmena_nazvu_projektu(object):
         self.label.setObjectName("label")
 
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(30, 10, 191, 21))
+        self.label_2.setGeometry(QtCore.QRect(30, 10, 321, 21))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_2.setFont(font)
