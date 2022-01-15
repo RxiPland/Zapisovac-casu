@@ -428,7 +428,7 @@ class Ui_MainWindow_admin_panel(object):
         self.label.setObjectName("label")
 
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(22, 30, 361, 16))
+        self.label_2.setGeometry(QtCore.QRect(22, 30, 471, 16))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_2.setFont(font)
@@ -476,7 +476,7 @@ class Ui_MainWindow_admin_panel(object):
 
 
         self.pushButton_6 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_6.setGeometry(QtCore.QRect(380, 47, 101, 41))
+        self.pushButton_6.setGeometry(QtCore.QRect(380, 50, 101, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.pushButton_6.setFont(font)
