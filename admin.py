@@ -163,6 +163,8 @@ class Ui_MainWindow_admin_panel(object):
 
         # vypočítá statistiku "celkový čas" v admin panelu
 
+        global nazev
+
         connection = sqlite3.connect(nazev + '.db')
         cursor = connection.cursor()
 
@@ -260,9 +262,9 @@ class Ui_MainWindow_admin_panel(object):
 
 
 
-            datum1_zapsani_dny = datetime.datetime(datum1_zapsani[2], datum1_zapsani[0], datum1_zapsani[1], predelany_cas_zacatek[0], predelany_cas_zacatek[1], predelany_cas_zacatek[2])
+            datum1_zapsani_dny = datetime.datetime(datum1_zapsani[2], datum1_zapsani[1], datum1_zapsani[0], predelany_cas_zacatek[0], predelany_cas_zacatek[1], predelany_cas_zacatek[2])
 
-            datum1_odepsani_dny = datetime.datetime(datum1_odepsani[2], datum1_odepsani[0], datum1_odepsani[1], predelany_cas_konec[0], predelany_cas_konec[1], predelany_cas_konec[2])
+            datum1_odepsani_dny = datetime.datetime(datum1_odepsani[2], datum1_odepsani[1], datum1_odepsani[0], predelany_cas_konec[0], predelany_cas_konec[1], predelany_cas_konec[2])
 
 
             finalni_cas = finalni_cas + (datum1_odepsani_dny - datum1_zapsani_dny)
@@ -344,9 +346,6 @@ class Ui_MainWindow_admin_panel(object):
 
             prvni_zacatek_cas = str(vysledek1) # čas
 
-
-
-
             celkovy_pocet_zacatku = int(posledni_id)
 
 
@@ -354,6 +353,9 @@ class Ui_MainWindow_admin_panel(object):
             vysledek1 = cursor.execute(sqlstr).fetchall()
 
             vysledek1 = vysledek1[0][0]
+
+            connection.commit()
+            cursor.close()
 
             try:
 
@@ -403,7 +405,7 @@ class Ui_MainWindow_admin_panel(object):
 
         # otevře web se zdrojovým kódem
 
-        webbrowser.open("https://github.com/RxiPland/zapisovac-casu")
+        webbrowser.open("https://github.com/RxiPland/Zapisovac-casu")
 
 
     def setupUi(self, MainWindow):
@@ -419,14 +421,14 @@ class Ui_MainWindow_admin_panel(object):
         self.centralwidget.setObjectName("centralwidget")
 
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(22, 80, 208, 21))
+        self.label.setGeometry(QtCore.QRect(22, 80, 461, 21))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label.setFont(font)
         self.label.setObjectName("label")
 
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(22, 30, 481, 16))
+        self.label_2.setGeometry(QtCore.QRect(22, 30, 361, 16))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_2.setFont(font)
@@ -473,6 +475,14 @@ class Ui_MainWindow_admin_panel(object):
         self.pushButton_5.clicked.connect(self.zdrojovy_kod)
 
 
+        self.pushButton_6 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_6.setGeometry(QtCore.QRect(380, 47, 101, 41))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.pushButton_6.setFont(font)
+        self.pushButton_6.setObjectName("pushButton_6")
+
+
         self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.plainTextEdit.setGeometry(QtCore.QRect(20, 110, 401, 151))
         font = QtGui.QFont()
@@ -501,4 +511,5 @@ class Ui_MainWindow_admin_panel(object):
         self.label_2.setText(_translate("MainWindow", "Aktuálně vybraný projekt:"))
         self.pushButton_4.setText(_translate("MainWindow", "Změnit název projektu"))
         self.pushButton_5.setText(_translate("MainWindow", "Zdrojový kód"))
+        self.pushButton_6.setText(_translate("MainWindow", "Poznámky"))
 

@@ -11,6 +11,7 @@ from hlavni_menu import Ui_MainWindow_hlavnimenu
 from overit_heslo import Ui_MainWindow_overit_heslo
 from zmena_hesla import Ui_MainWindow_Zmena_hesla_pro_admina
 from zmena_nazvu import Ui_MainWindow_Zmena_nazvu_projektu
+from poznamky import Ui_MainWindow_poznamky_okno
 from os import execl, remove, rename
 from os.path import exists
 import sqlite3
@@ -69,6 +70,8 @@ class vybrani_databaze(QMainWindow, Ui_MainWindow_Vyber_db):
     def potvrdit_nacteni_databaze(self):
 
         # když v menu, kde se vybírají projekty, vyberete jméno z boxu
+
+        global obsah_boxu
 
         obsah_boxu = str(self.comboBox.currentText())
 
@@ -339,10 +342,28 @@ class hlavni_menu(QMainWindow, Ui_MainWindow_hlavnimenu):
 
         elif chyby_konec == "OK":
 
+            global obsah_boxu
+
+            admin1.nazev_projektu(obsah_boxu)
+
+            connection = sqlite3.connect(obsah_boxu + '.db')
+            cursor = connection.cursor()
+
+            sqlstr = "SELECT * FROM tabulka ORDER BY ID DESC LIMIT 1"
+            vysledek1 = cursor.execute(sqlstr).fetchall()
+
+            posledni_id = int(vysledek1[0][0])
+
+            connection.commit()
+            cursor.close()
+
+
+            straveny_cas = admin1.vypocitat_celkovy_cas(posledni_id, posledni_id)
+
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Question)
             msgBox.setWindowTitle("Oznámení")
-            msgBox.setText("Čas ukončení byl zapsán")
+            msgBox.setText("Čas ukončení byl zapsán.\n\nDoba trvání, která se přičte do celkové statistiky: {straveny_cas}".format(straveny_cas=straveny_cas))
             msgBox.setStandardButtons(QMessageBox.Ok)
             msgBox.exec()
 
@@ -557,8 +578,9 @@ class overeni_hesla(QMainWindow, Ui_MainWindow_overit_heslo):
 
         if existuje == True:
 
-            heslo_hash = open(nazev + ".heslo","r")
-            heslo_hash = heslo_hash.readline()
+            heslo_hash_open = open(nazev + ".heslo","r")
+            heslo_hash = heslo_hash_open.readline()
+            heslo_hash_open.close()
 
             hash_zadaneho_hesla = hashlib.sha256(heslo.encode())
             hex_dig = str(hash_zadaneho_hesla.hexdigest())
@@ -884,6 +906,80 @@ class zmena_nazvu_projektu(QMainWindow, Ui_MainWindow_Zmena_nazvu_projektu):
             return
 
 
+class poznamky_okno(QMainWindow, Ui_MainWindow_poznamky_okno):
+
+
+    def __init__(self, *args, **kwargs):
+
+        QMainWindow.__init__(self, *args, **kwargs)
+        self.setupUi(self)
+
+    def otevrit_poznamky(self):
+
+        # načte data ze souboru do poznámkového boxu
+
+        global obsah_boxu
+
+        admin1.close()
+        admin1.center()
+
+        try:
+
+            poznamky_soubor = open(obsah_boxu + ".poznamky")
+            poznamky_soubor_text = str(poznamky_soubor.read())
+            poznamky_soubor.close()
+
+            poznamky1.plainTextEdit.setPlainText(poznamky_soubor_text)
+
+        except:
+
+            poznamky1.plainTextEdit.setPlainText("")
+
+        poznamky1.center()
+        poznamky1.show()
+
+    def zrusit(self):
+
+        # odejde z poznámek zpět do admin panelu
+
+        poznamky1.close()
+        poznamky1.center()
+        poznamky1.plainTextEdit.clear()
+
+        admin1.center()
+        admin1.show()
+
+
+    def zapsat_do_souboru(self):
+
+        # zapíše text z boxu s poznámkami do souboru
+
+        global obsah_boxu
+
+        try:
+
+            with open(obsah_boxu + ".poznamky", "w") as output:
+
+                output.write(str(poznamky1.plainTextEdit.toPlainText()))
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Uložení proběhlo v pořádku")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            poznamky1.zrusit()
+
+        except:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Nastala chyba s ukládáním!")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
 
 
 if __name__ == "__main__":
@@ -896,6 +992,7 @@ if __name__ == "__main__":
     heslo_overeni = overeni_hesla()
     zmenaHesla = zmena_heslaAdmin()
     zmenaNazvu = zmena_nazvu_projektu()
+    poznamky1 = poznamky_okno()
     global kamDal
     kamDal = "NORMAL"
     vyber_db1.pro_zacatek()
@@ -910,6 +1007,7 @@ if __name__ == "__main__":
     admin1.pushButton_2.clicked.connect(admin1.smazat_databazi)
     admin1.pushButton_3.clicked.connect(admin1.tlacitko_odejit)
     admin1.pushButton_4.clicked.connect(zmenaNazvu.otevrit_okno)
+    admin1.pushButton_6.clicked.connect(poznamky1.otevrit_poznamky)
     heslo_overeni.pushButton.clicked.connect(heslo_overeni.overeni_hesla)
     heslo_overeni.pushButton_2.clicked.connect(heslo_overeni.odejit)
     heslo_overeni.lineEdit.returnPressed.connect(heslo_overeni.overeni_hesla)
@@ -919,5 +1017,7 @@ if __name__ == "__main__":
     zmenaNazvu.pushButton.clicked.connect(zmenaNazvu.zmenit_nazev)
     zmenaNazvu.lineEdit.returnPressed.connect(zmenaNazvu.zmenit_nazev)
     zmenaNazvu.pushButton_2.clicked.connect(zmenaNazvu.zpet_do_admin_panelu)
+    poznamky1.pushButton.clicked.connect(poznamky1.zapsat_do_souboru)
+    poznamky1.pushButton_2.clicked.connect(poznamky1.zrusit)
     app.aboutToQuit.connect(hl_menu.ukoncit)
     sys.exit(app.exec_())
