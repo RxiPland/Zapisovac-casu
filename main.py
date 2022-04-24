@@ -1,6 +1,7 @@
 
 # Udělal RxiPland
 
+# python 3.9.9
 
 from PyQt5.QtWidgets import QAbstractItemView, QMessageBox, QMainWindow, QApplication
 from PyQt5.QtWidgets import QMessageBox
